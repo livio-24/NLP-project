@@ -3,27 +3,35 @@ from pathlib import Path
 import typer
 from loguru import logger
 from tqdm import tqdm
+import gzip
+import json
+import pandas as pd
 
-from nlp_project.config import PROCESSED_DATA_DIR, RAW_DATA_DIR
+from config import PROCESSED_DATA_DIR, RAW_DATA_DIR
 
-app = typer.Typer()
+def parse(path):
+    """Parse a gzipped JSON file line by line."""
+    with gzip.open(path, 'rb') as g:
+        for l in g:
+            yield json.loads(l)
+
+def getDF(path):
+    """Load a JSON file into a pandas DataFrame."""
+    df = {}
+    for i, d in enumerate(parse(path)):
+        df[i] = d
+    return pd.DataFrame.from_dict(df, orient='index')
+
+def load_data():
+    """Load datasets from specified paths."""
+    path = RAW_DATA_DIR / 'Cell_Phones_and_Accessories.json.gz'
+    path_meta = RAW_DATA_DIR / 'meta_Cell_Phones_and_Accessories.json.gz'
+    
+    data = getDF(path)
+    meta = getDF(path_meta)
+    
+    return data, meta
 
 
-@app.command()
-def main(
-    # ---- REPLACE DEFAULT PATHS AS APPROPRIATE ----
-    input_path: Path = RAW_DATA_DIR / "dataset.csv",
-    output_path: Path = PROCESSED_DATA_DIR / "dataset.csv",
-    # ----------------------------------------------
-):
-    # ---- REPLACE THIS WITH YOUR OWN CODE ----
-    logger.info("Processing dataset...")
-    for i in tqdm(range(10), total=10):
-        if i == 5:
-            logger.info("Something happened for iteration 5.")
-    logger.success("Processing dataset complete.")
-    # -----------------------------------------
 
 
-if __name__ == "__main__":
-    app()
