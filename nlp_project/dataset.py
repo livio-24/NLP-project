@@ -7,7 +7,7 @@ import gzip
 import json
 import pandas as pd
 
-from config import PROCESSED_DATA_DIR, RAW_DATA_DIR
+from nlp_project.config import PROCESSED_DATA_DIR, RAW_DATA_DIR
 
 def parse(path):
     """Parse a gzipped JSON file line by line."""
@@ -31,7 +31,5 @@ def load_data():
     meta = getDF(path_meta)
     
     return data, meta
-
-
 
 
