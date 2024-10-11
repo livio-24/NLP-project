@@ -30,3 +30,8 @@ def plotly_ex_barplot(data,x,y,color,height=400):
     "barplot using plotly express"
     fig = px.bar(data_frame=data, x=x, y=y, color=color, height=height)
     fig.show()
+
+def pie_chart_go(labels, values): 
+    "Use `hole` to create a donut-like pie chart in plotly"
+    fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.3)])
+    fig.show()
