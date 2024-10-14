@@ -14,19 +14,7 @@ from nltk.corpus import stopwords
 
 from nlp_project.config import PROCESSED_DATA_DIR, RAW_DATA_DIR
 
-# Inizializza le risorse una sola volta
-afinn = Afinn()
-stop_words = stopwords.words('english')
-lemmatizer = WordNetLemmatizer()
-
-nltk.download('punkt')
-nltk.download('wordnet')
-nltk.download('stopwords')
-nltk.download('averaged_perceptron_tagger')
-nltk.download('tagsets')
-nltk.download('universal_tagset')
-
-
+#--------------------------- LOAD DATA ----------------------------
 def parse(path):
     """Parse a gzipped JSON file line by line."""
     with gzip.open(path, 'rb') as g:
@@ -50,6 +38,18 @@ def load_data():
     
     return data, meta
 
+#---------------------------------- PRE-PROCESSING -----------------------------------------
+
+def cleaning_steps(text, lemmatizer, stop_words):
+
+    text_cleaned = re.sub(r'[^\w\s]', '', text) #cleaning: remove all character that aren't whitespaces or alphanumeric
+    words = nltk.word_tokenize(text_cleaned) #tokenization
+    words = [w.lower() for w in words] #lower casing
+    tagged_words = nltk.pos_tag(words, tagset='universal') #POS-tagging
+    preprocessed_words = [(lemmatizer.lemmatize(w), tag) for w, tag in tagged_words if not w in stop_words] #stopwords removal and lemmatization
+    
+    return preprocessed_words
+
 def preprocess(df, column):
     afinn = Afinn() 
     stop_words = stopwords.words('english')
@@ -58,11 +58,7 @@ def preprocess(df, column):
     tagged_text = []
     for row in tqdm(df[column], total = len(df[column])):
         afinn_scores = []
-        text_cleaned = re.sub(r'[^\w\s]', '', row) #cleaning: remove all character that aren't whitespaces or alphanumeric
-        words = nltk.word_tokenize(text_cleaned) #tokenization
-        words = [w.lower() for w in words] #lower casing
-        tagged_words = nltk.pos_tag(words, tagset='universal') #POS-tagging
-        preprocessed_words = [(lemmatizer.lemmatize(w), tag) for w, tag in tagged_words if not w in stop_words] #stopwords removal and lemmatization
+        preprocessed_words = cleaning_steps(row, lemmatizer=lemmatizer, stop_words=stop_words)
         preprocessed_text.append(' '.join([w for w, tag in preprocessed_words]))
         #afinn scores
         for word, tag in preprocessed_words:
@@ -73,14 +69,12 @@ def preprocess(df, column):
     return preprocessed_text, tagged_text
 
 def build_ontolgy(df):
+    stop_words = stopwords.words('english')
+    lemmatizer = WordNetLemmatizer()
     nouns = []
     for index, row in tqdm(df.iterrows(), total = len(df)):
         text = row['description']
-        text_cleaned = re.sub(r'[^\w\s]', '', text) #cleaning
-        words = nltk.word_tokenize(text_cleaned) #tokenization
-        words = [w.lower() for w in words] #lower casing
-        tagged_words = nltk.pos_tag(words, tagset='universal') #POS-tagging
-        preprocessed_words = [(lemmatizer.lemmatize(w), tag) for w, tag in tagged_words if not w in stop_words] #stopwords removal and lemmatization
+        preprocessed_words = cleaning_steps(text=text, lemmatizer=lemmatizer, stop_words=stop_words)
         #print(filter_text)
         for word, tag in preprocessed_words:
             if(tag == 'NOUN'):
