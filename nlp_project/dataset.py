@@ -29,7 +29,7 @@ def getDF(path):
     return pd.DataFrame.from_dict(df, orient='index')
 
 def load_data():
-    """Load datasets from specified paths."""
+    """Load raw data."""
     path = RAW_DATA_DIR / 'Cell_Phones_and_Accessories.json.gz'
     path_meta = RAW_DATA_DIR / 'meta_Cell_Phones_and_Accessories.json.gz'
     
@@ -37,6 +37,22 @@ def load_data():
     meta = getDF(path_meta)
     
     return data, meta
+
+def generate_dataset():
+    """Generate csv dataset from raw data"""
+    data, meta = load_data()
+    dataset = pd.merge(data, meta, on='asin')
+    # Select specific columns
+    selected_columns = ['overall', 'reviewText', 'category', 'description', 'title', 'brand', 'feature', 'details', 'main_cat', 'price', 'asin']
+    dataset = dataset[selected_columns]
+    dataset = dataset[dataset['category'].isin([['Cell Phones & Accessories', 'Cell Phones', 'Unlocked Cell Phones']])]
+    cell_phones_brand_counts = dataset['brand'].value_counts().reset_index()
+    cell_phones_brand_counts = cell_phones_brand_counts[:10]
+    top10_brand_list = cell_phones_brand_counts['brand']
+    dataset = dataset[dataset['brand'].isin(top10_brand_list)]
+    dataset = dataset.drop(columns = ['category', 'main_cat', 'details'])
+    return dataset
+
 
 #---------------------------------- PRE-PROCESSING -----------------------------------------
 
