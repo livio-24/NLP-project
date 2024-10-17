@@ -33,16 +33,19 @@ Lanciando questo script vengono eseguiti i vari step di analisi e si ottengono v
 - Il file json in cui vengono salvati per ogni prodotto i sentiment scores per ogni sentence, ed i sentiment scores per ciascuna feature, salvato in data/processed/bert_features_scores.json
 - Il dataframe contenente i vari scores per ciascun prodotto (RSS,FSS,global score, price), salvato in data/processed/scores_df.csv
 
-Una volta lanciato lo script ed ottenuto i vari file di output, è possibile lanciare vari scripts per effettuare delle query sui dati, per ora sono presenti i seguenti due comandi:
-- Query per estrarre i top k prodotti in base ad una certa feature
+Una volta lanciato lo script ed ottenuto i vari file di output, è possibile lanciare vari comandi per effettuare delle query sui dati, per ora sono presenti i seguenti comandi:
+- Estrarre i top k prodotti in base ad una certa feature
   ```bash
     python scores.py top_k_products_by_feature feature k
     ```
-- Query per estrarre le top k features di un dato prodotto
+- Estrarre le top k features di un dato prodotto
   ```bash
     python scrores.py top_k_features_by_product feature asin
     ```
-
+- Plottare le 2 word clouds, una rappresentante le features positive e una quelle negative di un dato cellulare
+  ```bash
+    python plots.py asin
+    ```
 ## Valutazione sperimentale
 E' stata condotta un’analisi su due variabili specifiche, la variabile temporale (anno recensione) e la variabile brand.
 
