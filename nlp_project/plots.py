@@ -14,6 +14,8 @@ import json
 
 from nlp_project.config import FIGURES_DIR, PROCESSED_DATA_DIR
 
+app = typer.Typer()
+
 def sb_bar_plot(x,y, title, xlabel, ylabel, orient='h', save_path=None):
     "bar plot using Seaborn"
     plt.figure(figsize=(8, 6))
@@ -71,9 +73,11 @@ def create_circular_mask(diameter):
     mask = (x - center) ** 2 + (y - center) ** 2 > center ** 2
     return 255 * mask.astype(int)
 
+#B00NET0PVI
+@app.command()
+def plot_features_wc(asin: str):
 
-def plot_features_wc(asin):
-
+    found = False
     with open(PROCESSED_DATA_DIR / 'bert_features_scores.json', 'r') as file:
         features_scores = json.load(file)
 
@@ -83,23 +87,34 @@ def plot_features_wc(asin):
         if(product['asin'] == asin):
             pos_features = {k: v for k, v in product['features'].items() if v > 3}
             neg_features = {k: v for k, v in product['features'].items() if v < 3}
+            found = True
 
-    # Definizione della palette di colori personalizzata
-    colors = ["#FF5733", "#33FF57", "#3357FF"]
-    cmap = LinearSegmentedColormap.from_list("custom_palette", colors)
-    
-    # Generate the word cloud
-    pos_wordcloud = WordCloud(mask=circular_mask, relative_scaling=0,width=600, height=400, colormap=cmap, background_color='white').generate_from_frequencies(frequencies=pos_features)
-    neg_wordcloud = WordCloud(mask=circular_mask, relative_scaling=0,width=600, height=400,colormap=cmap, background_color='white').generate_from_frequencies(frequencies=neg_features)
+    if(found):
 
-    fig, axs = plt.subplots(1, 2, figsize=(10, 5))
-    axs[0].imshow(pos_wordcloud, interpolation='bilinear')
-    axs[0].axis('off')  # Nascondi gli assi
-    axs[0].set_title('positive features')
+        # Definizione della palette di colori personalizzata
+        colors = ["#FF5733", "#33FF57", "#3357FF"]
+        cmap = LinearSegmentedColormap.from_list("custom_palette", colors)
+        
+        # Generate the word cloud
+        pos_wordcloud = WordCloud(mask=circular_mask, relative_scaling=0,width=600, height=400, colormap=cmap, background_color='white').generate_from_frequencies(frequencies=pos_features)
+        neg_wordcloud = WordCloud(mask=circular_mask, relative_scaling=0,width=600, height=400,colormap=cmap, background_color='white').generate_from_frequencies(frequencies=neg_features)
 
-    axs[1].imshow(neg_wordcloud, interpolation='bilinear')
-    axs[1].axis('off')  # Nascondi gli assi
-    axs[1].set_title('negative features')
-    
-    plt.tight_layout()
-    plt.show()
+        fig, axs = plt.subplots(1, 2, figsize=(10, 5))
+        axs[0].imshow(pos_wordcloud, interpolation='bilinear')
+        axs[0].axis('off')  # Nascondi gli assi
+        axs[0].set_title('positive features')
+
+        axs[1].imshow(neg_wordcloud, interpolation='bilinear')
+        axs[1].axis('off')  # Nascondi gli assi
+        axs[1].set_title('negative features')
+        
+        plt.tight_layout()
+        plt.show()
+
+    else:
+        print("L'asin inserito non è presente!")
+
+
+
+if __name__ == '__main__':
+    app()
