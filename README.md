@@ -20,7 +20,7 @@ Il progetto consiste nell'implementazione dell'architettura proposta nel seguent
 3. Attiva l'ambiente
    ```bash
     conda activate nlp-project
-4. Scaricare i dati dal seguente [link]([https://cseweb.ucsd.edu/~jmcauley/datasets/amazon_v2/](https://www.kaggle.com/datasets/liviovona24/amazon-cell-phones-reviews-data-1996-2018), e inserirli nella cartella data/processed.  
+4. Scaricare i dati dal seguente [link](https://www.kaggle.com/datasets/liviovona24/amazon-cell-phones-reviews-data-1996-2018), e inserirli nella cartella data/processed.  
 
 ## Esempi d'uso
 Una volta eseguiti gli step di installazione, è possibile lanciare il seguente script:
