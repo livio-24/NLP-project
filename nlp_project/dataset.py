@@ -43,7 +43,7 @@ def generate_dataset():
     data, meta = load_data()
     dataset = pd.merge(data, meta, on='asin')
     # Select specific columns
-    selected_columns = ['overall', 'reviewText', 'category', 'description', 'title', 'brand', 'feature', 'details', 'main_cat', 'price', 'asin']
+    selected_columns = ['overall', 'reviewText', 'reviewTime' 'category', 'description', 'title', 'brand', 'feature', 'details', 'main_cat', 'price', 'asin']
     dataset = dataset[selected_columns]
     dataset = dataset[dataset['category'].isin([['Cell Phones & Accessories', 'Cell Phones', 'Unlocked Cell Phones']])]
     cell_phones_brand_counts = dataset['brand'].value_counts().reset_index()

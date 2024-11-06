@@ -1,3 +1,5 @@
+import os
+
 from nlp_project.config import RAW_DATA_DIR, PROCESSED_DATA_DIR, INTERIM_DATA_DIR
 from nlp_project.dataset import *
 from nlp_project.sentiment_analysis import *
@@ -21,7 +23,10 @@ def detect_language(text):
     
 def main():
     #STEP 1
-    dataset = generate_dataset()
+    if not os.path.exists(PROCESSED_DATA_DIR / 'cell_phones_reviews.csv'):
+        dataset = generate_dataset()
+    else :
+        dataset = pd.read_csv(PROCESSED_DATA_DIR / 'cell_phones_reviews.csv')
     #print(dataset.head())
 
     #STEP 2
@@ -32,6 +37,10 @@ def main():
     dataset = dataset[dataset['price'].apply(lambda x: bool(regex.match(x)))]
     # Rimuoviamo il simbolo del dollaro dalla colonna 'prezzi'
     dataset['price'] = dataset['price'].str.replace('$', '', regex=False).astype(float)
+    # Convertire reviewTime in formato datetime
+    dataset['reviewTime'] = pd.to_datetime(dataset['reviewTime'], errors='coerce')
+    # Estrarre solo l'anno e sovrascrivere la colonna reviewTime
+    dataset['reviewTime'] = dataset['reviewTime'].dt.year
     reviews_count_per_product = dataset.groupby('asin').size().reset_index(name='counts').sort_values(by='counts', ascending=False)
     less_100_reviews = reviews_count_per_product[reviews_count_per_product['counts'] < 100]['asin']
     dataset = dataset[~dataset['asin'].isin(less_100_reviews)]
