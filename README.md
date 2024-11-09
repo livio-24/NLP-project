@@ -10,9 +10,7 @@ Il progetto consiste nell'implementazione dell'architettura proposta nel seguent
 
 ## Installazione
 
-1. Clonare il repository:
-   ```bash
-   https://github.com/livio-24/NLP-project.git
+1. Clonare la repository;
 
 2. Assicurati di avere Conda installato. Puoi ricreare l'ambiente con il seguente comando:
     ```bash
